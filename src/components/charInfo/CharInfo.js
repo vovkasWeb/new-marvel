@@ -34,6 +34,7 @@ class CharInfo extends Component {
 	onError = () => {
 		this.setState({ loading: false, error: true })
 	}
+	
 
 	updateChar = () => {
 		const { charId } = this.props
@@ -47,6 +48,8 @@ class CharInfo extends Component {
 			.getCharcter(charId)
 			.then(this.onCharLoaded)
 			.catch(this.onError)
+
+		
 	}
 
 	render() {

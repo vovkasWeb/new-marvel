@@ -9,22 +9,42 @@ class CharList extends Component {
 		charList: [],
 		loading: true,
 		error: false,
+		newItemLoading: false,
+		offset: 1541,
+		charEnd: false,
 	}
 
 	marvelService = new MarvelService()
 
 	componentDidMount() {
+		this.onRequest()
+	}
+	onRequest = offset => {
+		this.onCharListLoading()
+
 		this.marvelService
-			.getAllCharacters()
+			.getAllCharacters(offset)
 			.then(this.onCharListLoaded)
 			.catch(this.onError)
 	}
-
-	onCharListLoaded = charList => {
+	onCharListLoading = () => {
 		this.setState({
-			charList,
-			loading: false,
+			newItemLoading: true,
 		})
+	}
+
+	onCharListLoaded = newCharList => {
+		let ended = false
+		if (newCharList.length < 9) {
+			ended = true
+		}
+		this.setState(({ offset, charList }) => ({
+			charList: [...charList, ...newCharList],
+			loading: false,
+			newItemLoading: false,
+			offset: offset + 9,
+			charEnd: ended,
+		}))
 	}
 
 	onError = () => {
@@ -34,8 +54,6 @@ class CharList extends Component {
 		})
 	}
 
-	// Этот метод создан для оптимизации,
-	// чтобы не помещать такую конструкцию в метод render
 	renderItems(arr) {
 		const items = arr.map(item => {
 			let imgStyle = { objectFit: 'cover' }
@@ -55,7 +73,8 @@ class CharList extends Component {
 	}
 
 	render() {
-		const { charList, loading, error } = this.state
+		const { charList, loading, error, offset, newItemLoading, charEnd } =
+			this.state
 
 		const items = this.renderItems(charList)
 
@@ -68,7 +87,12 @@ class CharList extends Component {
 				{errorMessage}
 				{spinner}
 				{content}
-				<button className='button button__main button__long'>
+				<button
+					className='button button__main button__long'
+					disabled={newItemLoading}
+					onClick={() => this.onRequest(offset)}
+					style={{ display: charEnd ? 'none' : 'block' }}
+				>
 					<div className='inner'>load more</div>
 				</button>
 			</div>
