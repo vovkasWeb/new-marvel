@@ -8,7 +8,7 @@ const CharList =(props)=> {
 	const [charList,setCharList] = useState([]);
 	const [loading,setLoading] = useState(true);
 	const [error,setError] = useState(false);
-	const [newItemLoadin,setNewItemLoadin] = useState(false);
+	const [newItemLoadin ,setNewItemLoadin] = useState(false);
 	const [offset,setOffset] = useState(210);
 	const [charEnd,setCharEnd] = useState(false);
 
@@ -81,8 +81,8 @@ setLoading(loading=>false);
 				{content}
 				<button
 					className='button button__main button__long'
-					disabled={newItemLoading}
-					onClick={() => this.onRequest(offset)}
+					disabled={newItemLoadin}
+					onClick={() => onRequest(offset)}
 					style={{ display: charEnd ? 'none' : 'block' }}
 				>
 					<div className='inner'>load more</div>
