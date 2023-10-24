@@ -1,60 +1,54 @@
-import { Component } from 'react'
+import { useState,useEffect,useRef } from 'react'
 import Spinner from '../spinner/Spinner'
 import ErrorMessage from '../errorMessage/ErrorMessage'
 import MarvelService from '../../services/MarvelServise'
 import './charList.scss'
 
-class CharList extends Component {
-	state = {
-		charList: [],
-		loading: true,
-		error: false,
-		newItemLoading: false,
-		offset: 1541,
-		charEnd: false,
-	}
+const CharList =(props)=> {
+	const [charList,setCharList] = useState([]);
+	const [loading,setLoading] = useState(true);
+	const [error,setError] = useState(false);
+	const [newItemLoadin,setNewItemLoadin] = useState(false);
+	const [offset,setOffset] = useState(210);
+	const [charEnd,setCharEnd] = useState(false);
 
-	marvelService = new MarvelService()
+	const marvelService = new MarvelService()
 
-	componentDidMount() {
-		this.onRequest()
-	}
-	onRequest = offset => {
-		this.onCharListLoading()
-
-		this.marvelService
+	useEffect(()=>{
+        onRequest();
+	},[])
+	
+	const onRequest = offset => {
+		onCharListLoading()
+		marvelService
 			.getAllCharacters(offset)
 			.then(this.onCharListLoaded)
 			.catch(this.onError)
 	}
-	onCharListLoading = () => {
-		this.setState({
-			newItemLoading: true,
-		})
+	const onCharListLoading = () => {
+		setNewItemLoadin(true)
 	}
 
-	onCharListLoaded = newCharList => {
+	const onCharListLoaded = newCharList => {
 		let ended = false
 		if (newCharList.length < 9) {
 			ended = true
 		}
-		this.setState(({ offset, charList }) => ({
-			charList: [...charList, ...newCharList],
-			loading: false,
-			newItemLoading: false,
-			offset: offset + 9,
-			charEnd: ended,
-		}))
+	
+		setCharList(charList=>[...charList,...newCharList]);
+		setLoading(loading=>false);
+		setNewItemLoading(newItemLoading=>false);
+		setOffset(offset=>offset + 9);
+		setCharEnd(charEnd=>ended);
+
+	}
+	const onError = () => {
+		setError(true)
+setLoading(loading=>false);
 	}
 
-	onError = () => {
-		this.setState({
-			error: true,
-			loading: false,
-		})
-	}
 
-	renderItems(arr) {
+	const renderItems = (arr)=> {
 		const items = arr.map(item => {
 			let imgStyle = { objectFit: 'cover' }
 			return (
@@ -72,9 +66,7 @@ class CharList extends Component {
 		return <ul className='char__grid'>{items}</ul>
 	}
 
-	render() {
-		const { charList, loading, error, offset, newItemLoading, charEnd } =
-			this.state
+	
 
 		const items = this.renderItems(charList)
 
@@ -97,7 +89,7 @@ class CharList extends Component {
 				</button>
 			</div>
 		)
-	}
+	
 }
 
 export default CharList
